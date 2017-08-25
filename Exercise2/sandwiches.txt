@@ -1,0 +1,125 @@
+mysql> use exercise_2;
+Database changed
+mysql> show tables;
++----------------------+
+| Tables_in_exercise_2 |
++----------------------+
+| locations            |
+| sandwiches           |
+| tastes               |
++----------------------+
+3 rows in set (0.00 sec)
+
+mysql> DESC tastes;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| name    | varchar(20) | NO   | PRI | NULL    |       |
+| filling | varchar(20) | NO   | PRI | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+2 rows in set (0.02 sec)
+
+mysql> SELECT * FROM tastes;
++-------+---------+
+| name  | filling |
++-------+---------+
+| Brown | Beef    |
+| Brown | Ham     |
+| Brown | Turkey  |
+| Green | Beef    |
+| Green | Cheese  |
+| Green | Turkey  |
+| Jones | Cheese  |
++-------+---------+
+7 rows in set (0.00 sec)
+
+mysql> DESC locations;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| lname   | varchar(20) | NO   | PRI | NULL    |       |
+| phone   | varchar(10) | YES  |     | NULL    |       |
+| address | varchar(25) | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+3 rows in set (0.02 sec)
+
+mysql> SELECT * FROM locations;
++-----------+----------+---------------+
+| lname     | phone    | address       |
++-----------+----------+---------------+
+| Buttery   | 702 3421 | College St    |
+| Lincoln   | 683 4523 | Lincoln Place |
+| O'Neill's | 674 2134 | Pearse St     |
+| Old Nag   | 767 8132 | Dame St       |
++-----------+----------+---------------+
+4 rows in set (0.00 sec)
+
+mysql> DESC sandwiches;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| location | varchar(20) | NO   | PRI | NULL    |       |
+| bread    | varchar(10) | NO   | PRI | NULL    |       |
+| filling  | varchar(20) | NO   | PRI | NULL    |       |
+| price    | float(5,2)  | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+4 rows in set (0.10 sec)
+
+mysql> SELECT * FROM sandwiches;
++-----------+-------+---------+-------+
+| location  | bread | filling | price |
++-----------+-------+---------+-------+
+| Buttery   | White | Cheese  |  1.00 |
+| Buttery   | White | Ham     |  1.10 |
+| Lincoln   | Rye   | Beef    |  1.35 |
+| Lincoln   | Rye   | Ham     |  1.25 |
+| Lincoln   | White | Ham     |  1.30 |
+| O'Neill's | White | Cheese  |  1.20 |
+| O'Neill's | White | Turkey  |  1.35 |
+| O'Neill's | Whole | Ham     |  1.25 |
+| Old Nag   | Rye   | Beef    |  1.35 |
+| Old Nag   | Rye   | Ham     |  1.40 |
++-----------+-------+---------+-------+
+10 rows in set (0.00 sec)
+
+
+QUES.
+(i) places where Jones can eat (using a nested subquery).
+
+ANS.
+mysql> SELECT * FROM locations WHERE lname IN (SELECT location FROM sandwiches WHERE filling IN (SELECT tastes.filling FROM tastes WHERE name='Jones'));
++-----------+----------+------------+
+| lname     | phone    | address    |
++-----------+----------+------------+
+| Buttery   | 702 3421 | College St |
+| O'Neill's | 674 2134 | Pearse St  |
++-----------+----------+------------+
+2 rows in set (0.09 sec)
+
+
+(ii) places where Jones can eat (without using a nested subquery).
+
+ANS. 
+mysql> SELECT locations.* FROM locations,tastes,sandwiches WHERE tastes.name='Jones' && tastes.filling = sandwiches.filling && locations.lname = sandwiches.location;
++-----------+----------+------------+
+| lname     | phone    | address    |
++-----------+----------+------------+
+| Buttery   | 702 3421 | College St |
+| O'Neill's | 674 2134 | Pearse St  |
++-----------+----------+------------+
+2 rows in set (0.00 sec)
+
+
+(iii) for each location the number of people who can eat there.
+
+ANS. 
+mysql> SELECT locations.lname AS Location,COUNT(distinct name) AS 'Possible No. of Clients' FROM locations,tastes,sandwiches WHERE locations.lname = sandwiches.location && tastes.filling = sandwiches.filling GROUP BY lname;
++-----------+-------------------------+
+| Location  | Possible No. of Clients |
++-----------+-------------------------+
+| Buttery   |                       3 |
+| Lincoln   |                       2 |
+| O'Neill's |                       3 |
+| Old Nag   |                       2 |
++-----------+-------------------------+
+4 rows in set (0.00 sec)

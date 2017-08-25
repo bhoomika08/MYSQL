@@ -1,0 +1,8 @@
+C:\>mysqldump -u root -p db > c:\backup\db_backup.sql
+Enter password: *****
+
+mysql> CREATE DATABASE restored;
+Query OK, 1 row affected (0.00 sec)
+
+C:\>mysql -u root -p restored < c:\backup\db_backup.sql
+Enter password: *****

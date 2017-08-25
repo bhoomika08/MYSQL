@@ -1,0 +1,157 @@
+mysql> CREATE database multibranch_library;
+Query OK, 1 row affected (0.14 sec)
+
+mysql> use multibranch_library
+Database changed
+
+mysql> CREATE TABLE branch(bcode varchar(5) NOT NULL, librarian varchar(15), address varchar(20));
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> ALTER TABLE branch ADD PRIMARY KEY (bcode);
+Query OK, 0 rows affected (0.26 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> DESC branch;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| bcode     | varchar(5)  | NO   | PRI | NULL    |       |
+| librarian | varchar(15) | YES  |     | NULL    |       |
+| address   | varchar(20) | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+3 rows in set (0.07 sec)
+
+mysql> CREATE TABLE titles( title varchar(15) NOT NULL, author varchar(15), publisher varchar(15), PRIMARY KEY (title));
+Query OK, 0 rows affected (0.13 sec)
+
+mysql> DESC titles;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| title     | varchar(20) | NO   | PRI |         |       |
+| author    | varchar(15) | YES  |     | NULL    |       |
+| publisher | varchar(15) | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+3 rows in set (0.08 sec)
+
+mysql> CREATE TABLE holdings( branch varchar(15) NOT NULL, title varchar(15) NOT NULL, `#copies` int(10), PRIMARY KEY (title, branch), FOREIGN KEY(branch) REFERENCES branch(bcode),FOREIGN KEY(title) REFERENCES titles(title) );
+Query OK, 0 rows affected (0.18 sec)
+
+mysql> DESC holdings;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| branch  | varchar(15) | NO   | PRI | NULL    |       |
+| title   | varchar(15) | NO   | PRI | NULL    |       |
+| #copies | int(10)     | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+3 rows in set (0.09 sec)
+
+
+mysql> INSERT INTO branch(bcode,librarian,address) VALUES('B1','John Smith','2 Anglesea Rd'),('B2','Mary Jones','34 Pearse St'),('B3','Francis Owens','Grange X');
+Query OK, 3 rows affected (0.13 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM branch;
++-------+---------------+---------------+
+| bcode | librarian     | address       |
++-------+---------------+---------------+
+| B1    | John Smith    | 2 Anglesea Rd |
+| B2    | Mary Jones    | 34 Pearse St  |
+| B3    | Francis Owens | Grange X      |
++-------+---------------+---------------+
+3 rows in set (0.00 sec)
+
+
+mysql> INSERT INTO titles(title,author,publisher) VALUES('Susannah','Ann Brown','Macmillan'),('How to Fish','Amy Fly','Stop Press'),('A History of Dublin','David Little','Wiley'),('Computers','Blaise Pascal','Applewoods'),('The Wife','Ann Brown','Macmillan');
+Query OK, 5 rows affected (0.09 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM titles;
++---------------------+---------------+------------+
+| title               | author        | publisher  |
++---------------------+---------------+------------+
+| A History of Dublin | David Little  | Wiley      |
+| Computers           | Blaise Pascal | Applewoods |
+| How to Fish         | Amy Fly       | Stop Press |
+| Susannah            | Ann Brown     | Macmillan  |
+| The Wife            | Ann Brown     | Macmillan  |
++---------------------+---------------+------------+
+5 rows in set (0.00 sec)
+
+
+mysql> INSERT INTO holdings(branch,title,`#copies`) VALUES('B1','Susannah',3),('B1','How to Fish',2),('B1','A history of Dublin',1),('B2','How to Fish',4),('B2','Computers',2),('B2','The Wife',3),('B3','A history of Dublin',1),('B3','Computers',4),('B3','Susannah',3),('B3','The Wife',1);
+Query OK, 10 rows affected (0.07 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM holdings;
++--------+---------------------+---------+
+| branch | title               | #copies |
++--------+---------------------+---------+
+| B1     | A history of Dublin |       1 |
+| B3     | A history of Dublin |       1 |
+| B2     | Computers           |       2 |
+| B3     | Computers           |       4 |
+| B1     | How to Fish         |       2 |
+| B2     | How to Fish         |       4 |
+| B1     | Susannah            |       3 |
+| B3     | Susannah            |       3 |
+| B2     | The Wife            |       3 |
+| B3     | The Wife            |       1 |
++--------+---------------------+---------+
+10 rows in set (0.00 sec)
+
+QUES. 
+(i)the names of all library books published by Macmillan. 
+
+ANS.
+mysql> SELECT * FROM titles WHERE publisher = 'Macmillan';
++----------+-----------+-----------+
+| title    | author    | publisher |
++----------+-----------+-----------+
+| Susannah | Ann Brown | Macmillan |
+| The Wife | Ann Brown | Macmillan |
++----------+-----------+-----------+
+2 rows in set (0.00 sec)
+
+
+(ii)branches that hold any books by Ann Brown (using a nested subquery).
+
+ANS.
+mysql> SELECT branch.* FROM branch WHERE bcode IN (SELECT DISTINCT branch FROM holdings WHERE title IN (SELECT title FROM titles WHERE author = "Ann Brown"));
++-------+---------------+---------------+
+| bcode | librarian     | address       |
++-------+---------------+---------------+
+| B1    | John Smith    | 2 Anglesea Rd |
+| B2    | Mary Jones    | 34 Pearse St  |
+| B3    | Francis Owens | Grange X      |
++-------+---------------+---------------+
+3 rows in set (0.00 sec)
+
+
+(iii)branches that hold any books by Ann Brown (without using a nested subquery).
+
+ANS.
+mysql> SELECT DISTINCT branch.* FROM branch,holdings,titles WHERE titles.author="Ann Brown" && titles.title = holdings.title && holdings.branch = branch.bcode GROUP BY bcode;
++-------+---------------+---------------+
+| bcode | librarian     | address       |
++-------+---------------+---------------+
+| B1    | John Smith    | 2 Anglesea Rd |
+| B2    | Mary Jones    | 34 Pearse St  |
+| B3    | Francis Owens | Grange X      |
++-------+---------------+---------------+
+3 rows in set (0.00 sec)
+ 
+
+(iv)the total number of books held at each branch.
+
+ANS.
+mysql> SELECT branch AS Branch,SUM(`#copies`) AS 'Total Copies' FROM holdings GROUP BY branch;
++--------+--------------+
+| Branch | Total Copies |
++--------+--------------+
+| B1     |            6 |
+| B2     |            9 |
+| B3     |            9 |
++--------+--------------+
+3 rows in set (0.00 sec)

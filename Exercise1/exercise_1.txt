@@ -1,0 +1,97 @@
+mysql> create database db;
+mysql> use db
+Database changed
+
+Q1.Create a table named "testing_table" with following fields:
+
+name (string)
+contact_name (string)
+roll_no (string)
+
+Ans.
+mysql> CREATE TABLE testing_table(name VARCHAR(20), contact_name VARCHAR(20),roll_no VARCHAR(20));
+Query OK, 0 rows affected (0.22 sec)
+
+mysql> desc testing_table;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| name         | varchar(20) | YES  |     | NULL    |       |
+| contact_name | varchar(20) | YES  |     | NULL    |       |
+| roll_no      | varchar(20) | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+3 rows in set (0.09 sec)
+
+
+Q2. Delete column name
+
+Ans.
+mysql> alter table testing_table drop name;
+Query OK, 0 rows affected (0.20 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc testing_table;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| contact_name | varchar(20) | YES  |     | NULL    |       |
+| roll_no      | varchar(20) | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+2 rows in set (0.10 sec)
+
+
+Q3. rename contact_name to username
+
+Ans.
+mysql> alter table testing_table change contact_name username varchar(20);
+Query OK, 0 rows affected (0.33 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc testing_table;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| username | varchar(20) | YES  |     | NULL    |       |
+| roll_no  | varchar(20) | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+2 rows in set (0.08 sec)
+
+
+Q4. Add two fields first_name, last_name
+
+Ans.
+mysql> alter table testing_table add first_name varchar(20),add last_name varchar(20);
+Query OK, 0 rows affected (0.22 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc testing_table;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| username   | varchar(20) | YES  |     | NULL    |       |
+| roll_no    | varchar(20) | YES  |     | NULL    |       |
+| first_name | varchar(20) | YES  |     | NULL    |       |
+| last_name  | varchar(20) | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+4 rows in set (0.10 sec)
+
+
+Q5. change the type of roll_no to integer
+
+Ans. 
+mysql> alter table testing_table modify roll_no integer;
+Query OK, 0 rows affected (0.15 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc testing_table;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| username   | varchar(20) | YES  |     | NULL    |       |
+| roll_no    | int(11)     | YES  |     | NULL    |       |
+| first_name | varchar(20) | YES  |     | NULL    |       |
+| last_name  | varchar(20) | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+4 rows in set (0.08 sec)
+
+mysql>

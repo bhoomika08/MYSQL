@@ -1,0 +1,8 @@
+mysql> CREATE DATABASE vtapp;
+Query OK, 1 row affected (0.04 sec)
+
+mysql> CREATE USER 'vtapp_user'@'localhost' IDENTIFIED BY 'passwd';
+Query OK, 0 rows affected (0.15 sec)
+
+mysql> GRANT ALL PRIVILEGES ON vtapp.* TO 'vtapp_user'@'localhost';
+Query OK, 0 rows affected (0.00 sec)
