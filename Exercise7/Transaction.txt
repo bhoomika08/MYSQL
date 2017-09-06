@@ -43,7 +43,7 @@ ANS.
 mysql> START TRANSACTION;
 Query OK, 0 rows affected (0.00 sec)
 
-mysql> UPDATE accounts SET balance = 21000 WHERE account_no IN (SELECT account_no FROM users WHERE name = 'userA');
+mysql> UPDATE accounts SET balance = balance + 1000 WHERE account_no IN (SELECT account_no FROM users WHERE name = 'userA');
 Query OK, 1 row affected (0.00 sec)
 Rows matched: 1  Changed: 1  Warnings: 0
 Query OK, 0 rows affected (0.12 sec)
@@ -66,7 +66,7 @@ ANS.
 mysql> START TRANSACTION;
 Query OK, 0 rows affected (0.00 sec)
 
-mysql> UPDATE accounts SET balance = 20500 WHERE account_no IN (SELECT account_no FROM users WHERE name = 'userA');
+mysql> UPDATE accounts SET balance = balance - 500 WHERE account_no IN (SELECT account_no FROM users WHERE name = 'userA');
 Query OK, 1 row affected (0.00 sec)
 Rows matched: 1  Changed: 1  Warnings: 0
 
@@ -87,11 +87,11 @@ ANS.
 mysql> START TRANSACTION;
 Query OK, 0 rows affected (0.00 sec)
 
-mysql> UPDATE accounts SET balance = 20300 WHERE account_no IN (SELECT account_no FROM users WHERE name = 'userA');
+mysql> UPDATE accounts SET balance = balance - 200 WHERE account_no IN (SELECT account_no FROM users WHERE name = 'userA');
 Query OK, 1 row affected (0.00 sec)
 Rows matched: 1  Changed: 1  Warnings: 0
 
-mysql> UPDATE accounts SET balance = 10200 WHERE account_no IN (SELECT account_no FROM users WHERE name = 'userB');
+mysql> UPDATE accounts SET balance = balance + 200 WHERE account_no IN (SELECT account_no FROM users WHERE name = 'userB');
 Query OK, 1 row affected (0.00 sec)
 Rows matched: 1  Changed: 1  Warnings: 0
 
